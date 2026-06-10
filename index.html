@@ -1,0 +1,1134 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg-main: #1a1919;
+    --bg-bar: #252424;
+    --bg-pane: #1e1d1c;
+    --border-subtle: #363534;
+    --text-normal: #d4d3d0;
+    --text-muted: #8e8d8a;
+    --text-bright: #e8e6e3;
+
+    /* Orange Theme (Default) */
+    --accent: #d97757;
+    --accent-rgb: 217, 119, 87;
+    --accent-secondary: #8ab4f8;
+    --accent-tertiary: #bdae93;
+  }
+
+  html {
+    background-color: #1e1d1c;
+  }
+
+  [data-theme="blue"] {
+    --accent: #58a6ff;
+    --accent-rgb: 88, 166, 255;
+    --accent-secondary: #d2a8ff;
+    --accent-tertiary: #79c0ff;
+  }
+
+  [data-theme="green"] {
+    --accent: #56d364;
+    --accent-rgb: 86, 211, 100;
+    --accent-secondary: #58a6ff;
+    --accent-tertiary: #e3b341;
+  }
+
+
+  .term-root {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-main);
+    color: var(--text-normal);
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 600px;
+    font-size: 13px;
+    line-height: 1.6;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .term-bar {
+    background: var(--bg-bar);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+  .d-red {
+    background: #ff5f56;
+  }
+
+  .d-yellow {
+    background: #ffbd2e;
+  }
+
+  .d-green {
+    background: #27c93f;
+  }
+
+  .term-title {
+    flex: 1;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    letter-spacing: 0.5px;
+  }
+
+  .term-body {
+    padding: 0;
+  }
+
+  .tab-bar {
+    display: flex;
+    background: var(--bg-bar);
+    border-bottom: 1px solid var(--border-subtle);
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+  }
+
+  .tab:hover {
+    color: var(--text-bright);
+    background: #313030;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: var(--bg-main);
+  }
+
+  .pane {
+    display: none;
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .pane.active {
+    display: block;
+    animation: fadeUp 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .prompt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .ps1-user {
+    color: var(--accent);
+  }
+
+  .ps1-at {
+    color: var(--text-muted);
+  }
+
+  .ps1-host {
+    color: var(--accent-tertiary);
+  }
+
+  .ps1-path {
+    color: var(--accent-secondary);
+  }
+
+  .ps1-sep {
+    color: var(--text-muted);
+  }
+
+  .ps1-dollar {
+    color: var(--text-muted);
+  }
+
+  /* Typing effect wrapper */
+  .cmd-wrapper {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ps1-cmd {
+    color: var(--text-bright);
+    margin-left: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: none;
+  }
+
+  .pane.active .ps1-cmd {
+    animation: typing 1.2s steps(30, end) forwards;
+    width: 0;
+  }
+
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+
+    to {
+      width: 100%;
+    }
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+
+  .banner {
+    font-family: monospace;
+    white-space: pre;
+    line-height: 1;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+
+  @keyframes blink {
+
+    0%,
+    100% {
+      opacity: 1
+    }
+
+    50% {
+      opacity: 0
+    }
+  }
+
+  .output-block {
+    margin-bottom: 24px;
+    animation: fadeIn 1s forwards 1.2s;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .section-header {
+    color: var(--accent-tertiary);
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .section-header::before {
+    content: '❯ ';
+    color: var(--accent);
+  }
+
+  .kv-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .kv-key {
+    color: var(--accent-secondary);
+    min-width: 130px;
+  }
+
+  .kv-sep {
+    color: var(--text-muted);
+    margin: 0 4px;
+  }
+
+  .kv-val {
+    color: var(--text-bright);
+    flex: 1;
+  }
+
+  .kv-tag {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .bullet-line {
+    margin-bottom: 6px;
+    padding-left: 16px;
+    position: relative;
+    color: var(--text-normal);
+    line-height: 1.5;
+  }
+
+  .bullet-line::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .proj-title {
+    color: var(--text-bright);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .proj-date {
+    color: var(--text-muted);
+    float: right;
+    font-size: 11px;
+  }
+
+  .proj-tech {
+    color: var(--accent);
+    font-size: 11.5px;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+
+  .cert-item {
+    border-left: 2px solid var(--border-subtle);
+    padding-left: 14px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+
+  .cert-item:hover {
+    border-color: var(--accent);
+  }
+
+  .cert-name {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .cert-date {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .skill-group {
+    margin-bottom: 14px;
+  }
+
+  .skill-pills {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pill {
+    background: var(--bg-bar);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-normal);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pill:hover {
+    border-color: var(--accent);
+    color: var(--text-bright);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.15);
+  }
+
+  .pill.ai {
+    border-color: rgba(var(--accent-rgb), 0.26);
+    color: var(--accent);
+    background: #2a2220;
+  }
+
+  .pill.ai:hover {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.13);
+  }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .bar-label {
+    color: var(--text-normal);
+    min-width: 160px;
+    font-size: 11.5px;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-bar);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bar-pct {
+    color: var(--text-muted);
+    font-size: 11px;
+    min-width: 32px;
+  }
+
+  .ascii-box {
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 18px 16px 16px;
+    margin-bottom: 20px;
+    position: relative;
+    background: var(--bg-pane);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ascii-box:hover {
+    border-color: rgba(var(--accent-rgb), 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .ascii-box-title {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: var(--bg-main);
+    padding: 0 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+    border-radius: 4px;
+    transition: color 0.3s;
+  }
+
+  .ascii-box:hover .ascii-box-title {
+    color: var(--accent);
+  }
+
+  .contact-link {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-link:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  .banner {
+    font-family: 'Courier New', Consolas, monospace;
+    color: var(--accent);
+    font-size: 10px;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    white-space: pre;
+    user-select: none;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2);
+    animation: pulse 4s infinite, fadeIn 1s forwards 1.2s;
+    opacity: 0;
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+
+    50% {
+      filter: brightness(0.8);
+    }
+  }
+
+  .status-line {
+    display: flex;
+    justify-content: space-between;
+    background: var(--bg-bar);
+    padding: 8px 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .status-ok {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .status-info {
+    color: var(--accent-tertiary);
+  }
+
+  .summary-text {
+    color: var(--text-normal);
+    line-height: 1.8;
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.08) 0%, transparent 100%);
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-bar);
+    border: 1px solid var(--border-subtle);
+    color: var(--accent-secondary);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    text-decoration: none;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .link-btn:hover {
+    border-color: var(--accent);
+    background: #2a2220;
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .grep-match {
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent);
+    padding: 0 4px;
+    border-radius: 4px;
+  }
+
+  /* Stagger animations for outputs */
+  .pane.active .output-block:nth-child(1) {
+    animation-delay: 1.2s;
+  }
+
+  .pane.active .output-block:nth-child(2) {
+    animation-delay: 1.4s;
+  }
+
+  .pane.active .output-block:nth-child(3) {
+    animation-delay: 1.6s;
+  }
+
+  .pane.active .output-block:nth-child(4) {
+    animation-delay: 1.8s;
+  }
+
+  .pane.active .ascii-box {
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 1.2s;
+  }
+
+  .pane.active .ascii-box:nth-child(2) {
+    animation-delay: 1.3s;
+  }
+
+  .pane.active .ascii-box:nth-child(3) {
+    animation-delay: 1.4s;
+  }
+
+  .pane.active .ascii-box:nth-child(4) {
+    animation-delay: 1.5s;
+  }
+
+  .pane.active .ascii-box:nth-child(5) {
+    animation-delay: 1.6s;
+  }
+
+  .pane.active .ascii-box:nth-child(6) {
+    animation-delay: 1.7s;
+  }
+
+  .pane.active .ascii-box:nth-child(7) {
+    animation-delay: 1.8s;
+  }
+
+  .pane.active .section-header {
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 1.2s;
+  }
+
+  .pane.active .skill-group {
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 1.3s;
+  }
+
+  .pane.active .cert-item {
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 1.3s;
+  }
+
+  .pane.active .cert-item:nth-child(2) {
+    animation-delay: 1.4s;
+  }
+
+  .pane.active .cert-item:nth-child(3) {
+    animation-delay: 1.5s;
+  }
+
+  .pane.active .cert-item:nth-child(4) {
+    animation-delay: 1.6s;
+  }
+
+  .pane.active .cert-item:nth-child(5) {
+    animation-delay: 1.7s;
+  }
+
+  .pane.active .cert-item:nth-child(6) {
+    animation-delay: 1.8s;
+  }
+
+  .theme-toggles {
+    display: flex;
+    gap: 6px;
+    margin-left: 10px;
+  }
+
+  .theme-btn {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .theme-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .theme-btn.active {
+    border-color: var(--text-normal);
+    box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.5);
+  }
+
+  .tb-orange {
+    background: #d97757;
+  }
+
+  .tb-blue {
+    background: #58a6ff;
+  }
+
+  .tb-green {
+    background: #56d364;
+  }
+</style>
+
+<div class="term-root">
+  <div class="term-bar">
+    <div class="dot d-red"></div>
+    <div class="dot d-yellow"></div>
+    <div class="dot d-green"></div>
+    <div class="term-title">adit@portfolio ~ — resume.sh</div>
+    <div class="theme-toggles">
+      <h4>change color::</h4>
+      <div class="theme-btn tb-orange active" onclick="setTheme('orange')"></div>
+      <div class="theme-btn tb-blue" onclick="setTheme('blue')"></div>
+      <div class="theme-btn tb-green" onclick="setTheme('green')"></div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('home')">~</div>
+    <div class="tab" onclick="switchTab('skills')">./skills</div>
+    <div class="tab" onclick="switchTab('projects')">./projects</div>
+    <div class="tab" onclick="switchTab('education')">./education</div>
+    <div class="tab" onclick="switchTab('contact')">./contact</div>
+  </div>
+
+  <div id="pane-home" class="pane active">
+    <div class="prompt">
+      <span class="ps1-user">adit</span><span class="ps1-at">@</span><span class="ps1-host">portfolio</span><span
+        class="ps1-sep">:</span><span class="ps1-path">~</span><span class="ps1-dollar"> $ </span>
+      <div class="cmd-wrapper"><span class="ps1-cmd">cat resume.json | jq .</span><span class="cursor"></span></div>
+    </div>
+
+    <!-- prettier-ignore -->
+    <div class="banner">
+  █████╗ ██████╗ ██╗████████╗    ███████╗██╗  ██╗ █████╗ ██████╗ ███╗   ███╗ █████╗
+ ██╔══██╗██╔══██╗██║╚══██╔══╝    ██╔════╝██║  ██║██╔══██╗██╔══██╗████╗ ████║██╔══██╗
+ ███████║██║  ██║██║   ██║       ███████╗███████║███████║██████╔╝██╔████╔██║███████║
+ ██╔══██║██║  ██║██║   ██║       ╚════██║██╔══██║██╔══██║██╔══██╗██║╚██╔╝██║██╔══██║
+ ██║  ██║██████╔╝██║   ██║       ███████║██║  ██║██║  ██║██║  ██║██║ ╚═╝ ██║██║  ██║
+ ╚═╝  ╚═╝╚═════╝ ╚═╝   ╚═╝       ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝</div>
+
+    <div class="output-block">
+      <div class="ascii-box">
+        <div class="ascii-box-title">identity</div>
+        <div class="kv-row"><span class="kv-key">name</span><span class="kv-sep">=</span><span class="kv-val">"Adit
+            Sharma"</span></div>
+        <div class="kv-row"><span class="kv-key">role</span><span class="kv-sep">=</span><span class="kv-val">"<span
+              class="grep-match">AI-focused Software Developer</span>"</span></div>
+        <div class="kv-row"><span class="kv-key">university</span><span class="kv-sep">=</span><span
+            class="kv-val">"KIET, Ghaziabad"</span></div>
+        <div class="kv-row"><span class="kv-key">degree</span><span class="kv-sep">=</span><span class="kv-val">"B.Tech
+            CSE" <span class="kv-tag">// 2024–2028</span></span></div>
+        <div class="kv-row"><span class="kv-key">sgpa</span><span class="kv-sep">=</span><span class="kv-val">8.0 <span
+              class="kv-tag">// sem 1–4</span></span></div>
+      </div>
+    </div>
+
+    <div class="output-block">
+      <div class="section-header">SUMMARY</div>
+      <div class="summary-text">
+        AI-focused Software Developer with experience in building GenAI and ML systems, including agentic workflows,
+        retrieval-based pipelines, and deep learning models. Skilled in end-to-end AI applications using Python,
+        FastAPI, and modern ML frameworks — with hands-on work in LLM-powered agents, NLP systems, and computer vision.
+      </div>
+    </div>
+
+    <div class="output-block" style="margin-top:16px">
+      <div class="section-header">QUICK STATS</div>
+      <div class="progress-bar"><span class="bar-label">GenAI / Agentic Systems</span>
+        <div class="bar-track">
+          <div class="bar-fill" id="b1" style="width:0%;background:var(--accent)"></div>
+        </div><span class="bar-pct">90%</span>
+      </div>
+      <div class="progress-bar"><span class="bar-label">Python / ML Frameworks</span>
+        <div class="bar-track">
+          <div class="bar-fill" id="b2" style="width:0%;background:var(--accent-tertiary)"></div>
+        </div><span class="bar-pct">88%</span>
+      </div>
+      <div class="progress-bar"><span class="bar-label">Computer Vision</span>
+        <div class="bar-track">
+          <div class="bar-fill" id="b3" style="width:0%;background:var(--accent-secondary)"></div>
+        </div><span class="bar-pct">78%</span>
+      </div>
+      <div class="progress-bar"><span class="bar-label">Backend / APIs</span>
+        <div class="bar-track">
+          <div class="bar-fill" id="b4" style="width:0%;background:var(--accent-tertiary)"></div>
+        </div><span class="bar-pct">82%</span>
+      </div>
+      <div class="progress-bar"><span class="bar-label">MLOps / DevOps</span>
+        <div class="bar-track">
+          <div class="bar-fill" id="b5" style="width:0%;background:var(--text-muted)"></div>
+        </div><span class="bar-pct">72%</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-skills" class="pane">
+    <div class="prompt">
+      <span class="ps1-user">adit</span><span class="ps1-at">@</span><span class="ps1-host">portfolio</span><span
+        class="ps1-sep">:</span><span class="ps1-path">~/skills</span><span class="ps1-dollar"> $ </span>
+      <div class="cmd-wrapper"><span class="ps1-cmd">ls -la --group-by-category</span><span class="cursor"></span></div>
+    </div>
+
+    <div class="section-header">LANGUAGES</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">Python</span>
+        <span class="pill">JavaScript</span>
+        <span class="pill">TypeScript</span>
+        <span class="pill">C++</span>
+        <span class="pill">Java</span>
+      </div>
+    </div>
+
+    <div class="section-header">AI / ML & GENAI</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill ai">LangChain</span>
+        <span class="pill ai">LangGraph</span>
+        <span class="pill ai">Transformers</span>
+        <span class="pill ai">Hugging Face</span>
+        <span class="pill ai">TensorFlow</span>
+        <span class="pill ai">PyTorch</span>
+        <span class="pill ai">Scikit-learn</span>
+        <span class="pill ai">Prompt Engineering</span>
+        <span class="pill ai">LLM Workflows</span>
+        <span class="pill ai">Embeddings</span>
+        <span class="pill ai">ONNX Runtime</span>
+      </div>
+    </div>
+
+    <div class="section-header">FRAMEWORKS & BACKEND</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">FastAPI</span>
+        <span class="pill">Django</span>
+        <span class="pill">Flask</span>
+        <span class="pill">REST APIs</span>
+        <span class="pill">Model Serving</span>
+        <span class="pill">API Design</span>
+        <span class="pill">Authentication</span>
+        <span class="pill">Microservices</span>
+      </div>
+    </div>
+
+    <div class="section-header">CLOUD & DEVOPS</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">AWS</span>
+        <span class="pill">EC2</span>
+        <span class="pill">S3</span>
+        <span class="pill">Lambda</span>
+        <span class="pill">CI/CD Basics</span>
+        <span class="pill">Linux</span>
+      </div>
+    </div>
+
+    <div class="section-header">DATABASES</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">MongoDB</span>
+        <span class="pill">MySQL</span>
+        <span class="pill">Qdrant</span>
+        <span class="pill">FAISS</span>
+        <span class="pill">Query Optimization</span>
+        <span class="pill">Database Design</span>
+      </div>
+    </div>
+
+    <div class="section-header">COMPUTER VISION</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">OpenCV</span>
+        <span class="pill">Pillow (PIL)</span>
+      </div>
+    </div>
+
+    <div class="section-header">TOOLS & PLATFORMS</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">Git</span>
+        <span class="pill">GitHub</span>
+        <span class="pill">Docker</span>
+        <span class="pill">GitHub Actions</span>
+        <span class="pill">Postman</span>
+        <span class="pill">Vercel</span>
+        <span class="pill">Render</span>
+        <span class="pill">Hugging Face Spaces</span>
+        <span class="pill">Kaggle</span>
+      </div>
+    </div>
+
+    <div class="section-header">CORE CONCEPTS</div>
+    <div class="skill-group" style="margin-bottom:14px">
+      <div class="skill-pills">
+        <span class="pill">DSA</span>
+        <span class="pill">OOPs</span>
+        <span class="pill">Problem Solving</span>
+        <span class="pill">System Design Basics</span>
+      </div>
+    </div>
+
+    <div class="section-header">ADDITIONAL</div>
+    <div class="skill-group">
+      <div class="skill-pills">
+        <span class="pill">API Integration</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-projects" class="pane">
+    <div class="prompt">
+      <span class="ps1-user">adit</span><span class="ps1-at">@</span><span class="ps1-host">portfolio</span><span
+        class="ps1-sep">:</span><span class="ps1-path">~/projects</span><span class="ps1-dollar"> $ </span>
+      <div class="cmd-wrapper"><span class="ps1-cmd">git log --oneline --all</span><span class="cursor"></span></div>
+    </div>
+
+    <div class="ascii-box" style="margin-bottom:16px">
+      <div class="ascii-box-title">feat: Researcho</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">Researcho: E-Commerce Intelligence Agent</span>
+        <span style="color:#8b949e;font-size:11px">Feb–Apr 2026</span>
+      </div>
+      <div class="proj-tech">FastAPI · LangGraph · Gemini API · Qdrant · sentence-transformers</div>
+      <div class="bullet-line">Autonomous e-commerce research agent for structured market analysis.</div>
+      <div class="bullet-line">Multi-step workflows: web search → scrape → retrieve → reason pipeline.</div>
+      <div class="bullet-line">Embeddings-based retrieval with Qdrant for contextual memory across sessions.</div>
+      <div class="bullet-line">Extracts sentiment signals and competitor gap analysis at scale.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditsharma12/Auto_research" target="_blank">⎋ GitHub</a>
+      </div>
+    </div>
+
+    <div class="ascii-box" style="margin-bottom:16px">
+      <div class="ascii-box-title">feat: NLP Engine</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">NLP Sentiment Analysis Engine</span>
+        <span style="color:#8b949e;font-size:11px">Apr–May 2026</span>
+      </div>
+      <div class="proj-tech">TensorFlow · VADER · ONNX · Flask · Docker · GitHub Actions · Pytest</div>
+      <div class="bullet-line">Hybrid deep learning + VADER pipeline for improved sentiment classification.</div>
+      <div class="bullet-line">ONNX-optimized inference — faster deployment, lower latency.</div>
+      <div class="bullet-line">MLOps: CI/CD via GitHub Actions, Docker containerization, Pytest suite.</div>
+      <div class="bullet-line">Full Flask API with real-time inference and frontend interface.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditsharma12/nlp_class" target="_blank">⎋ GitHub</a>
+      </div>
+    </div>
+
+    <div class="ascii-box" style="margin-bottom:16px">
+      <div class="ascii-box-title">feat: MedVision</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">Tumor & Skin Cancer Detection</span>
+        <span style="color:#8b949e;font-size:11px">Jul–Aug 2025</span>
+      </div>
+      <div class="proj-tech">ONNX · OpenCV · PIL · Deep Learning · Flask</div>
+      <div class="bullet-line">ONNX-based image classifier for tumor and skin cancer detection.</div>
+      <div class="bullet-line">Efficient preprocessing and inference pipeline for medical images.</div>
+      <div class="bullet-line">Web interface for image upload with visual prediction results.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditsharma12/Tumour_cancer_det" target="_blank">⎋ GitHub</a>
+      </div>
+    </div>
+
+    <div class="ascii-box" style="margin-bottom:16px">
+      <div class="ascii-box-title">feat: ONNX Ease</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">AI Model Hosting & Execution Platform</span>
+        <span style="color:#8b949e;font-size:11px">Jan–Mar 2026</span>
+      </div>
+      <div class="proj-tech">AWS Serverless · Lambda · API Gateway · S3 · ONNX</div>
+      <div class="bullet-line">Built a fully serverless platform to upload, manage, and run ONNX models as APIs using
+        AWS Lambda and API Gateway.</div>
+      <div class="bullet-line">Implemented secure model uploads via pre-signed S3 URLs and managed storage with Amazon
+        S3.</div>
+      <div class="bullet-line">Designed REST APIs for model execution, retrieval, and deletion with scalable serverless
+        inference.</div>
+      <div class="bullet-line">Integrated CloudWatch logging for monitoring, debugging, and performance tracking.</div>
+      <div class="bullet-line">Ensured security using IAM roles and API Gateway protection mechanisms.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditi05336/onnx_ease" target="_blank">⎋ GitHub</a>
+      </div>
+    </div>
+
+    <div class="ascii-box" style="margin-bottom:16px">
+      <div class="ascii-box-title">feat: TicketSys</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">KIET Ticket Management System</span>
+        <span style="color:#8b949e;font-size:11px">Sep–Nov 2025</span>
+      </div>
+      <div class="proj-tech">Next.js · Django · Full Stack Web</div>
+      <div class="bullet-line">Developed a full-stack ticket booking platform for managing seminars, workshops, and
+        campus events.</div>
+      <div class="bullet-line">Designed a modular architecture (UI → Application Logic → Database) using Next.js
+        (frontend) and Django (backend).</div>
+      <div class="bullet-line">Implemented user registration, authentication, and real-time ticket booking workflows.
+      </div>
+      <div class="bullet-line">Built admin dashboard for event creation, pricing control, and ticket tracking.</div>
+      <div class="bullet-line">Developed RESTful APIs with Django and integrated them with a responsive Next.js
+        frontend.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditsharma12/ticket_sys/tree/main" target="_blank">⎋ GitHub</a>
+      </div>
+    </div>
+
+    <div class="ascii-box">
+      <div class="ascii-box-title">feat: StegoCrypt</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="proj-title">StegoCrypt: Encryption & Steganography Web App</span>
+        <span style="color:#8b949e;font-size:11px">Jun–Aug 2025</span>
+      </div>
+      <div class="proj-tech">Flask · Python · Cryptography · Steganography</div>
+      <div class="bullet-line">Developed a secure web application for text encryption, image steganography, and
+        image-audio transformation.</div>
+      <div class="bullet-line">Implemented cryptographic techniques using Fernet encryption and SHA-256 hashing for
+        secure data handling.</div>
+      <div class="bullet-line">Built LSB-based image steganography system to hide and extract sensitive information from
+        images.</div>
+      <div class="bullet-line">Designed image-to-audio and audio-to-image transformation pipelines for secure data
+        encoding.</div>
+      <div class="bullet-line">Developed Flask-based backend with interactive UI for real-time encryption and decryption
+        workflows.</div>
+      <div style="margin-top:10px">
+        <a class="link-btn" href="https://github.com/Aditsharma12/Project_ghostkey/tree/main" target="_blank">⎋
+          GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-education" class="pane">
+    <div class="prompt">
+      <span class="ps1-user">adit</span><span class="ps1-at">@</span><span class="ps1-host">portfolio</span><span
+        class="ps1-sep">:</span><span class="ps1-path">~/education</span><span class="ps1-dollar"> $ </span>
+      <div class="cmd-wrapper"><span class="ps1-cmd">grep -r "certifications" . && cat degree.json</span><span
+          class="cursor"></span></div>
+    </div>
+
+    <div class="section-header">DEGREE</div>
+    <div class="ascii-box" style="margin-bottom:18px">
+      <div class="ascii-box-title">degree</div>
+      <div class="kv-row"><span class="kv-key">program</span><span class="kv-sep"> → </span><span class="kv-val"
+          style="color:var(--accent-tertiary)">B.Tech Computer Science & Engineering</span></div>
+      <div class="kv-row"><span class="kv-key">institution</span><span class="kv-sep"> → </span><span class="kv-val"
+          style="color:var(--accent-secondary)">KIET Deemed to be University, Ghaziabad</span></div>
+      <div class="kv-row"><span class="kv-key">duration</span><span class="kv-sep"> → </span><span class="kv-val">Sep
+          2024 → Jun 2028</span></div>
+      <div class="kv-row"><span class="kv-key">sgpa</span><span class="kv-sep"> → </span><span class="kv-val"><span
+            style="color:var(--accent);font-weight:700">8.0</span> <span class="kv-tag">// through semester
+            4</span></span></div>
+    </div>
+
+    <div class="section-header">CERTIFICATIONS</div>
+
+    <div class="cert-item">
+      <div class="cert-name">AWS Certified Data Engineer – Associate</div>
+      <div class="cert-date">Mar 2026 – May 2026</div>
+      <div style="color:#c9d1d9;font-size:11.5px;margin-top:3px">Data pipelines, data processing, and scalable data
+        systems on AWS.</div>
+      <a class="link-btn" href="https://drive.google.com/file/d/1w5A8n3uSPG5ZLL8ryrHHQVD73GdZYJJD/view" target="_blank"
+        style="display:inline-block;margin-top:6px">⎋ View cert</a>
+    </div>
+
+    <div class="cert-item">
+      <div class="cert-name">AWS Certified Cloud Practitioner</div>
+      <div class="cert-date">Jan 2026 – Mar 2026</div>
+      <div style="color:#c9d1d9;font-size:11.5px;margin-top:3px">AWS cloud concepts, services, security, and deployment
+        models.</div>
+      <a class="link-btn" href="https://drive.google.com/file/d/1Na0mmWdFcsBQjRpRaXRb8BQC50Z-T4-7/view" target="_blank"
+        style="display:inline-block;margin-top:6px">⎋ View cert</a>
+    </div>
+
+    <div class="cert-item">
+      <div class="cert-name">Geek Room Certificate</div>
+      <div class="cert-date">2025</div>
+      <div style="color:#c9d1d9;font-size:11.5px;margin-top:3px">Active participation in technical community initiatives
+        and dev activities.</div>
+      <a class="link-btn" href="https://drive.google.com/file/d/1Uu9Kx_8M7XlPzxgBmw0IEhqS02O9_ILb/view" target="_blank"
+        style="display:inline-block;margin-top:6px">⎋ View cert</a>
+    </div>
+
+    <div class="cert-item">
+      <div class="cert-name">Database Programming with SQL – English</div>
+      <div class="cert-date">Dec 2025</div>
+      <div style="color:#c9d1d9;font-size:11.5px;margin-top:3px">Award of Completion for satisfactory completion of all
+        coursework covering SQL programming, queries, and database operations.</div>
+      <a class="link-btn" href="https://drive.google.com/file/d/1xnyQA1iOof7LB1AqjDm8Teaz8O0-dwl4/view" target="_blank"
+        style="display:inline-block;margin-top:6px">⎋ View cert</a>
+    </div>
+
+    <div class="cert-item">
+      <div class="cert-name">Red Hat Training: Getting Started with Linux Fundamentals (RH104)</div>
+      <div class="cert-date">2025</div>
+      <div style="color:#c9d1d9;font-size:11.5px;margin-top:3px">Certificate of attendance for foundational training in
+        Linux systems, command-line usage, and core operating system concepts.</div>
+      <a class="link-btn" href="https://drive.google.com/file/d/1FZjyyiFsCOfcofQtLW4wyWoVksA-TrvN/view" target="_blank"
+        style="display:inline-block;margin-top:6px">⎋ View cert</a>
+    </div>
+  </div>
+
+  <div id="pane-contact" class="pane">
+    <div class="prompt">
+      <span class="ps1-user">adit</span><span class="ps1-at">@</span><span class="ps1-host">portfolio</span><span
+        class="ps1-sep">:</span><span class="ps1-path">~/contact</span><span class="ps1-dollar"> $ </span>
+      <div class="cmd-wrapper"><span class="ps1-cmd">curl -s https://adit.dev/contact | jq .</span><span
+          class="cursor"></span></div>
+    </div>
+
+    <div class="ascii-box">
+      <div class="ascii-box-title">contact.json</div>
+      <div class="kv-row" style="margin-bottom:8px"><span class="kv-key">phone</span><span class="kv-sep"> :
+        </span><span class="kv-val">+91-8958077038</span></div>
+      <div class="kv-row" style="margin-bottom:8px"><span class="kv-key">email</span><span class="kv-sep"> :
+        </span><span class="kv-val"><a class="contact-link"
+            href="mailto:aditsharma2005.vs@gmail.com">aditsharma2005.vs@gmail.com</a></span></div>
+      <div class="kv-row" style="margin-bottom:8px"><span class="kv-key">github</span><span class="kv-sep"> :
+        </span><span class="kv-val"><a class="contact-link" href="https://github.com/Aditsharma12"
+            target="_blank">github.com/Aditsharma12</a></span></div>
+      <div class="kv-row" style="margin-bottom:8px"><span class="kv-key">linkedin</span><span class="kv-sep"> :
+        </span><span class="kv-val"><a class="contact-link" href="https://www.linkedin.com/in/adit-sharma-8681502b7/"
+            target="_blank">linkedin.com/in/adit-sharma</a></span></div>
+      <div class="kv-row"><span class="kv-key">leetcode</span><span class="kv-sep"> : </span><span class="kv-val"><a
+            class="contact-link" href="https://leetcode.com/u/rpDPna5eXg/" target="_blank">leetcode.com/u/aditsharma</a></span></div>
+    </div>
+
+    <div style="margin-top:18px;color:#8e8d8a;font-size:12px;border-top:1px solid #363534;padding-top:14px">
+      <span style="color:var(--accent)">✔</span> Open to internships, collabs, and AI/ML roles<br>
+      <span style="color:var(--accent)">✔</span> Building in public — check GitHub for latest<br>
+      <span style="color:var(--accent-tertiary)">→</span> Response time: &lt; 24h
+    </div>
+  </div>
+
+  <div class="status-line">
+    <span><span class="status-ok">✔ NORMAL</span> &nbsp;|&nbsp; adit@portfolio</span>
+    <span class="status-info">AI Developer · B.Tech CSE · KIET</span>
+    <span id="status-clock" style="color:#8b949e">--:--:--</span>
+  </div>
+</div>
+
+<script>
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.tb-' + theme).classList.add('active');
+  }
+
+  function switchTab(id) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    const tabs = ['home', 'skills', 'projects', 'education', 'contact'];
+    const idx = tabs.indexOf(id);
+    document.querySelectorAll('.tab')[idx].classList.add('active');
+    document.getElementById('pane-' + id).classList.add('active');
+    if (id === 'home') animateBars();
+  }
+
+  function animateBars() {
+    const vals = [90, 88, 78, 82, 72];
+    vals.forEach((v, i) => {
+      setTimeout(() => {
+        const el = document.getElementById('b' + (i + 1));
+        if (el) el.style.width = v + '%';
+      }, i * 120);
+    });
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('status-clock').textContent =
+      now.toTimeString().slice(0, 8);
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  setTimeout(animateBars, 300);
+</script>
